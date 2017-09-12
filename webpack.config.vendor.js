@@ -29,7 +29,7 @@ module.exports = (env) => {
     const isDevBuild = !(env && env.prod);
     const sharedConfig = {
         stats: { modules: false },
-        resolve: { extensions: [ '.js' ] },
+        resolve: { extensions: ['.js'] },
         module: {
             rules: [
                 { test: /\.(png|woff|woff2|eot|ttf|svg)(\?|$)/, use: 'url-loader?limit=100000' }
@@ -71,24 +71,7 @@ module.exports = (env) => {
         ])
     });
 
-    const serverBundleConfig = merge(sharedConfig, {
-        target: 'node',
-        resolve: { mainFields: ['main'] },
-        entry: { vendor: allModules.concat(['aspnet-prerendering']) },
-        output: {
-            path: path.join(__dirname, 'ClientApp', 'dist'),
-            libraryTarget: 'commonjs2',
-        },
-        module: {
-            rules: [ { test: /\.css(\?|$)/, use: ['to-string-loader', isDevBuild ? 'css-loader' : 'css-loader?minimize' ] } ]
-        },
-        plugins: [
-            new webpack.DllPlugin({
-                path: path.join(__dirname, 'ClientApp', 'dist', '[name]-manifest.json'),
-                name: '[name]_[hash]'
-            })
-        ]
-    });
 
-    return [clientBundleConfig, serverBundleConfig];
+
+    return [clientBundleConfig];
 }
