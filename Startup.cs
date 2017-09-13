@@ -42,7 +42,7 @@ namespace AspCoreBrew
                     // to create the DB and write to it.
                     var connStr = "Data Source=" +
                                   Path.Combine(HostingEnvironment.ContentRootPath, "IngredientsData.sqlite");
-                    builder.UseSqlite(connStr);
+                    builder.UseSqlite(connStr).EnableSensitiveDataLogging();
                 //}
 
                 

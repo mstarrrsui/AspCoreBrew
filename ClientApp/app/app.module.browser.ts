@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { RouterModule } from '@angular/router';
+import { RouterModule, PreloadAllModules } from '@angular/router';
 
 //import '../styles/styles.css';
 import { AppComponent } from './app/app.component';
@@ -15,6 +15,8 @@ import { HomeComponent } from './home/home.component';
 import { IngredientService } from './ingredients/service/ingredient.service';
 import { Error404Component } from './errors/404.component';
 import { HopDetailComponent } from './ingredients/hops-detail/hop-detail.component';
+import { ROUTES } from './routes'
+import { ToastrService } from './common/toastr.service';
 
 @NgModule({
     bootstrap: [ AppComponent ],
@@ -33,14 +35,9 @@ import { HopDetailComponent } from './ingredients/hops-detail/hop-detail.compone
         BrowserModule,
         HttpModule,
         FormsModule,
-        RouterModule.forRoot([
-            { path: '', redirectTo: 'home', pathMatch: 'full' },
-            { path: 'home', component: HomeComponent },
-            { path: 'counter', component: CounterComponent },
-            { path: 'fetch-data', component: FetchDataComponent },
-            { path: '**', redirectTo: 'home' }
-        ])
-    ]
+        RouterModule.forRoot(ROUTES, { enableTracing: true, useHash: true, preloadingStrategy: PreloadAllModules })
+    ],
+    providers: [ IngredientService, ToastrService ]
 })
 export class AppModule {
 }

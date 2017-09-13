@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace AspCoreBrew.Model
 {
@@ -13,21 +17,54 @@ namespace AspCoreBrew.Model
                 return;
             }
 
-            var hops = new Hop[]
-            {
-                new Hop{ Id=1,Name="Admiral",Description="Bittering hops derived from Wye Challenger.  Good high-alpha bittering hops.\nUsed for: Ales\nAroma: Primarily for bittering\nSubstitutes: Target, Northdown, Challenger\n"},
-                new Hop{ Id=2,Name="Cascade",Description="A hops with Northern Brewers Heritage\nUsed for: American ales and lagers\nAroma: Strong spicy, floral, grapefruit character\nSubstitutes: Centennial\nExamples: Sierra Nevada Pale Ale, Anchor Liberty Ale"},
-                new Hop{ Id=3,Name="Citra",Description="Special aroma hops released in 2007.  Imparts high alpha/oil content but low cohumulone.\nAroma: Adds interesting citrus and tropical fruit character to the beer.  \nSubstitutes: Unknown"},
-                new Hop{ Id=4,Name="Columbia",Description="Sibling of Williamette hops.\nUsed for: All English Ales\nAroma: Close to Fuggles\nSubstitutes: Fuggles, Williamette"},
-                new Hop{ Id=5,Name="Fuggle",Description="As Fuggle (U.K.), only organic variety\nTypical alpha: 3-5%. Organically grown Fuggle hops from the UK. Wonderful earthy, pipe-tobacco, floral character. Classic hop for any English ale."},
-            };
+            var hops = ReadData<Hop>("hops.json", item => {
+                var h = new Hop
+                    {
+                        Id = item.id,
+                        Name = item.name,
+                        Description = item.description,
+                        Type = item.type,
+                        CountryOfOrigin = item.countryOfOrigin,
+                        AlphaAcid = item.alphaAcid ?? Decimal.Parse(item.alphaAcid),
+                        BetaAcid = item.betaAcid ?? Decimal.Parse(item.betaAcid),
+                        HSI = item.hsi ?? Decimal.Parse(item.hsi),
+                        UseIn = item.useIn
+                    };
+                 Console.WriteLine($"{h.Id} {h.Name} {h.AlphaAcid}");
+                 return h;
+                }
+            );
+
+            //var ids = hops.Where(h => h.Id == 1);
+            //foreach (var hop in ids)
+            //{
+            //    Console.WriteLine($"Name: {hop.Name}");
+            //}
 
             foreach (var h in hops)
             {
-                ctx.Hops.Add(h);    
+                ctx.Hops.Add(h);
             }
 
             ctx.SaveChanges();
+        }
+
+        private static IEnumerable<T> ReadData<T>(string filename, Func<dynamic,T> map)
+        {
+            //read data file
+            var itemlist = new List<T>();
+            using (StreamReader r = new StreamReader(filename))
+            {
+                string json = r.ReadToEnd();
+                dynamic jdata = JsonConvert.DeserializeObject(json);
+                //fix the file so that data is not under data attribute
+                foreach (var item in jdata.data)
+                {
+                    var h = map(item);
+                    itemlist.Add(h);
+                }
+            }
+            return itemlist;
         }
     }
 }

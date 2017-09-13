@@ -11,5 +11,11 @@ namespace AspCoreBrew.Model
 
         public DbSet<Hop> Hops { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Hop>().HasKey(x => x.Id);
+            modelBuilder.Entity<Hop>().Property(x => x.Id).ValueGeneratedNever();
+        }
+
     }
 }
