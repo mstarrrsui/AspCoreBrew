@@ -19,8 +19,8 @@ export class IngredientService {
     public getHops(): Observable<Hop[]> {
 
         if (!this._hopslist) {
-            this._hopslist =  this.http.get('/api/hops')
-                .do( (list) => console.log(list))
+            this._hopslist = this.http.get('/api/hops')
+                //.do( (list) => console.log(list))
                 .map((res: Response) => res.json() as Hop[])
                 .publishReplay(1).refCount()
                 .catch(this.handleError);
